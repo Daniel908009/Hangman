@@ -5,7 +5,16 @@ import random
 
 # function to reset the game
 def reset():
-    pass
+    global word, length
+    # deleting everything in the canvas
+    canvas.delete("all")
+    # picking a new random word
+    word = random.choice(words)
+    # getting the length of the word
+    length = len(word)
+    # creating a new word label
+    word_label.config(text="_ " * length)
+    window.update()
 
 # function to apply the settings
 def apply_settings():
@@ -25,11 +34,11 @@ def settings():
     frame = tkinter.Frame(settings_window, bg="gray")
     frame.pack()
 
-    # creating an entry for ???
+    # creating an entry for adding a word
     entry = tkinter.Entry(frame)
     entry.grid(row=0, column=1)
     # creating a label for ???
-    label = tkinter.Label(frame, text="???", font=("Arial", 10), bg="gray")
+    label = tkinter.Label(frame, text="Adding a new word", font=("Arial", 10), bg="gray")
     label.grid(row=0, column=0)
 
     # creating a label for the resizability choice
@@ -56,13 +65,35 @@ def settings():
 
     settings_window.mainloop()
 
+# function to submit a guessed letter
+def submit_guess(letter):
+    # clearing the entry
+    entry.delete(0, "end")
+    # checking if only one letter was entered
+    if len(letter) != 1:
+        print("Please enter only one letter!")
+        return
+    # checking if the letter is in the word
+    if letter in word:
+        print("Correct!")
+        # finding the index of the letter in the word
+        index = word.index(letter)
+        print(index)
+        # replacing the _ with the letter in the word_label
+        word_label.config(text=word_label.cget("text")[:index * 2] + letter + word_label.cget("text")[index * 2 + 1:])
+        # checking if there is a letter left to guess, if no the player won
+        if "_" not in word_label.cget("text"):
+            print("You won!")
+        window.update()
+    else:
+        print("Incorrect!")
 
 # Main window settings
 window = tkinter.Tk()
 window.title("Hangman")
 window.geometry("700x500")
-window.resizable(True, True)
-#window.iconbitmap("hangman.ico")
+window.resizable(False, False)
+window.iconbitmap("hangman.ico")
 window.config(bg="gray")
 
 # creating a list of words from the words.txt file
@@ -109,7 +140,7 @@ entry = tkinter.Entry(entry_frame, font=("Arial", 10))
 entry.grid(row=0, column=0)
 
 # creating a submit button
-submit_button = tkinter.Button(entry_frame, text="Submit", font=("Arial", 7), width=10)
+submit_button = tkinter.Button(entry_frame, text="Submit", font=("Arial", 7), width=10, command=lambda: submit_guess(entry.get()))
 submit_button.grid(row=0, column=1)
 
 # creating a frame for the reset and settings button
