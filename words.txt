@@ -27,7 +27,7 @@ help
 summer
 winter
 June
-Jully
+July
 text
 file
 shop
