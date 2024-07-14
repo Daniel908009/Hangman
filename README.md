@@ -6,3 +6,4 @@ easy = 10 mistakes <br>
 medium = 8 mistakes <br>
 hard = 6 mistakes <br>
 The base game also includes a file with some test words. <br>
+*note: to apply any changes in size of the window you have to press the reset button
