@@ -4,7 +4,7 @@ import random
 
 # function to reset the game
 def reset():
-    global word, length
+    global word, length, buffer_size, center_size
     # clearing the entry
     entry.delete(0, "end")
     # changing the sizes of the labels
@@ -29,18 +29,41 @@ def reset():
     info_label.config(text="Guess a letter")
     # deleting everything in the canvas
     canvas.delete("all")
+    # changing the size of the canvas
+    canvas_width = window.winfo_width() // 2 + 50
+    canvas.config(width=canvas_width, height=window.winfo_height())
+    # getting the buffer size and center size
+    buffer_size = window.winfo_height() // 6
+    center_size = window.winfo_width() // 6
+
     # drawing the hangman pole
-    canvas.create_line(50, 50, 50, 400)
-    canvas.create_line(50, 50, 200, 50)
-    canvas.create_line(200, 50, 200, 100)
+    canvas.create_line(center_size+50, buffer_size+50, center_size+50, buffer_size+400)
+    canvas.create_line(center_size+50, buffer_size+50, center_size+200, buffer_size+50)
+    canvas.create_line(center_size+200, buffer_size+50, center_size+200, buffer_size+100)
     # picking a new random word
+    # checking if the word is empty if yes than another word will be picked
     word = random.choice(words)
+    while len(word) == 0:
+        word = random.choice(words)
+    # changing the word to uppercase for easier comparison and better playability of the game
+    word = word.upper()
+    # deleting any spaces in the word
+    word = word.replace(" ", "")
+
     # getting the length of the word
     length = len(word)
     # creating a new word label
     word_label.config(text="_ " * length)
     # resetting the submit button
     submit_button.config(state="normal")
+    # resetting the hangman parts
+    global difficulty, hangman_parts
+    if difficulty == "easy":
+        hangman_parts = ["head", "body", "left arm", "right arm", "left leg", "right leg", "left foot", "right foot", "left hand", "right hand"]
+    elif difficulty == "medium":
+        hangman_parts = ["head", "body", "left arm", "right arm", "left leg", "right leg", "left foot", "right foot"]
+    elif difficulty == "hard":
+        hangman_parts = ["head", "body", "left arm", "right arm", "left leg", "right leg"]
     window.update()
 
 # function to apply the settings
@@ -51,14 +74,8 @@ def apply_settings(answer_resizable, answer_difficulty):
     else:
         window.resizable(False, False)
     # changing the difficulty
-    global difficulty, number_of_wrong_guesses
+    global difficulty
     difficulty = answer_difficulty
-    if difficulty == "easy":
-        number_of_wrong_guesses = 10
-    elif difficulty == "medium":
-        number_of_wrong_guesses = 8
-    elif difficulty == "hard":
-        number_of_wrong_guesses = 6
     # changing the hangman parts based on the difficulty
     global hangman_parts
     hangman_parts.clear()
@@ -82,6 +99,7 @@ def save_words(words):
     
 # function to edit the file with the words, add or remove words
 def change_words():
+    # creating a new window for the text editor
     change_words_window = tkinter.Toplevel(window)
     change_words_window.title("Edit words")
     change_words_window.geometry("700x400")
@@ -106,6 +124,8 @@ def change_words():
 
 # function for the settings window
 def settings():
+    # creating a new window for the settings
+    global difficulty
     settings_window = tkinter.Toplevel(window)
     settings_window.title("Settings")
     settings_window.geometry("300x200")
@@ -139,19 +159,26 @@ def settings():
     difficulty_label = tkinter.Label(frame, text="Difficulty", font=("Arial", 10), bg="gray")
     difficulty_label.grid(row=2, column=0)
     # creating a multiple choice for the difficulty (easy, medium, hard)
-    difficulty = tkinter.StringVar()
-    difficulty.set("medium")
-    difficulty_menu = tkinter.OptionMenu(frame, difficulty, "easy", "medium", "hard")
+    difficultya = tkinter.StringVar()
+    # setting the difficulty based on the current difficulty of the game
+    if difficulty == "easy":
+        difficultya.set("easy")
+    elif difficulty == "medium":
+        difficultya.set("medium")
+    elif difficulty == "hard":
+        difficultya.set("hard")
+    difficulty_menu = tkinter.OptionMenu(frame, difficultya, "easy", "medium", "hard")
     difficulty_menu.grid(row=2, column=1)
     
     # creating a submit button
-    submit_button = tkinter.Button(settings_window, text="Submit", font=("Arial", 10), command=lambda: apply_settings(resizable.get(), difficulty.get()))
+    submit_button = tkinter.Button(settings_window, text="Submit", font=("Arial", 10), command=lambda: apply_settings(resizable.get(), difficultya.get()))
     submit_button.pack(side="bottom")
 
     settings_window.mainloop()
 
 # function to submit a guessed letter
 def submit_guess(letter):
+    global buffer_size
     # making the guessed letter all uppercase
     letter = letter.upper()
     # clearing the entry
@@ -170,110 +197,107 @@ def submit_guess(letter):
             word_label.config(text=word_label.cget("text")[:index * 2] + letter + word_label.cget("text")[index * 2 + 1:])
         # checking if there is a letter left to guess, if no the player won
         if "_" not in word_label.cget("text"):
-            info_label.config(text="You won!")
+            info_label.config(text="You won! The word was: "+word)
             submit_button.config(state="disabled")
         window.update()
     else:
         global number_of_wrong_guesses, difficulty, hangman_parts
         info_label.config(text="Incorrect!")
-        #print(difficulty)
         if difficulty == "easy":
             # creating the hangman parts
             if hangman_parts[0] == "head":
-                canvas.create_oval(150, 100, 250, 200)
+                canvas.create_oval(center_size+150, buffer_size+100, center_size+250, buffer_size+200)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "body":
-                canvas.create_line(200, 200, 200, 300)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+200, buffer_size+300)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left arm":
-                canvas.create_line(200, 200, 150, 250)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+150, buffer_size+250)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right arm":
-                canvas.create_line(200, 200, 250, 250)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+250, buffer_size+250)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left leg":
-                canvas.create_line(200, 300, 150, 350)
+                canvas.create_line(center_size+200, buffer_size+300, center_size+150, buffer_size+350)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right leg":
-                canvas.create_line(200, 300, 250, 350)
+                canvas.create_line(center_size+200, buffer_size+300, center_size+250, buffer_size+350)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left foot":
-                canvas.create_line(150, 350, 100, 350)
+                canvas.create_line(center_size+150, buffer_size+350, center_size+100, buffer_size+350)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right foot":
-                canvas.create_line(250, 350, 300, 350)
+                canvas.create_line(center_size+250, buffer_size+350, center_size+300, buffer_size+350)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left hand":
-                canvas.create_line(150, 250, 100, 250)
+                canvas.create_line(center_size+150, buffer_size+250, center_size+100, buffer_size+250)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right hand":
-                canvas.create_line(250, 250, 300, 250)
+                canvas.create_line(center_size+250, buffer_size+250, center_size+300, buffer_size+250)
                 hangman_parts.pop(0)
             # checking if the player lost
-            if number_of_wrong_guesses == 0 or len(hangman_parts) == 0:
-                info_label.config(text="You lost!")
+            if len(hangman_parts) == 0:
+                info_label.config(text="You lost! The word was: "+word)
                 submit_button.config(state="disabled")
                 return
 
         elif difficulty == "medium":
             #creating the hangman parts
             if hangman_parts[0] == "head":
-                canvas.create_oval(150, 100, 250, 200)
+                canvas.create_oval(center_size+150, buffer_size+100, center_size+250, buffer_size+200)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "body":
-                canvas.create_line(200, 200, 200, 300)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+200, buffer_size+300)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left arm":
-                canvas.create_line(200, 200, 150, 250)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+150, buffer_size+250)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right arm":
-                canvas.create_line(200, 200, 250, 250)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+250, buffer_size+250)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left leg":
-                canvas.create_line(200, 300, 150, 350)
+                canvas.create_line(center_size+200, buffer_size+300, center_size+150, buffer_size+350)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right leg":
-                canvas.create_line(200, 300, 250, 350)
+                canvas.create_line(center_size+200, buffer_size+300, center_size+250, buffer_size+350)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left foot":
-                canvas.create_line(150, 350, 100, 350)
+                canvas.create_line(center_size+150, buffer_size+350, center_size+100, buffer_size+350)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right foot":
-                canvas.create_line(250, 350, 300, 350)
+                canvas.create_line(center_size+250, buffer_size+350, center_size+300, buffer_size+350)
                 hangman_parts.pop(0)
             # checking if the player lost
-            if number_of_wrong_guesses == 0 or len(hangman_parts) == 0:
-                info_label.config(text="You lost!")
+            if len(hangman_parts) == 0:
+                info_label.config(text="You lost! The word was: "+word)
                 submit_button.config(state="disabled")
                 return
 
         elif difficulty == "hard":
             #creating the hangman parts
             if hangman_parts[0] == "head":
-                canvas.create_oval(150, 100, 250, 200)
+                canvas.create_oval(center_size+150, buffer_size+100, center_size+250, buffer_size+200)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "body":
-                canvas.create_line(200, 200, 200, 300)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+200, buffer_size+300)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left arm":
-                canvas.create_line(200, 200, 150, 250)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+150, buffer_size+250)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right arm":
-                canvas.create_line(200, 200, 250, 250)
+                canvas.create_line(center_size+200, buffer_size+200, center_size+250, buffer_size+250)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "left leg":
-                canvas.create_line(200, 300, 150, 350)
+                canvas.create_line(center_size+200, buffer_size+300, center_size+150, buffer_size+350)
                 hangman_parts.pop(0)
             elif hangman_parts[0] == "right leg":
-                canvas.create_line(200, 300, 250, 350)
+                canvas.create_line(center_size+200, buffer_size+300, center_size+250, buffer_size+350)
                 hangman_parts.pop(0)
             # checking if the player lost
-            if number_of_wrong_guesses == 0 or len(hangman_parts) == 0:
-                info_label.config(text="You lost!")
+            if len(hangman_parts) == 0:
+                info_label.config(text="You lost! The word was: "+word)
                 submit_button.config(state="disabled")
-                return
-        number_of_wrong_guesses -= 1
-        
+                return     
 
 # Main window settings
 window = tkinter.Tk()
@@ -286,16 +310,12 @@ window.config(bg="gray")
 # variable for difficulty
 # based on the difficulty the number of parts of the hangman will be determined
 difficulty = "medium"
-number_of_wrong_guesses = 0
 hangman_parts = []
 if difficulty == "easy":
-    number_of_wrong_guesses = 10
     hangman_parts = ["head", "body", "left arm", "right arm", "left leg", "right leg", "left foot", "right foot", "left hand", "right hand"]
 elif difficulty == "medium":
-    number_of_wrong_guesses = 8
     hangman_parts = ["head", "body", "left arm", "right arm", "left leg", "right leg", "left foot", "right foot"]
 elif difficulty == "hard":
-    number_of_wrong_guesses = 6
     hangman_parts = ["head", "body", "left arm", "right arm", "left leg", "right leg"]
 
 
@@ -308,8 +328,14 @@ with open("words.txt", "r") as file:
         line = file.readline()
 
 # picking a random word from the list
-word = random.choice(words)
+word = ""
+# checking if the word is empty if yes than another word will be picked
+while len(word) == 0:
+    word = random.choice(words)
+# changing the word to uppercase for easier comparison and better playability of the game
 word = word.upper()
+# deleting any spaces in the word
+word = word.replace(" ", "")
 
 # getting the length of the word
 length = len(word)
@@ -318,13 +344,20 @@ length = len(word)
 main_frame = tkinter.Frame(window, bg="gray", width=700, height=500)
 main_frame.pack()
 
+# creating a variable for the canvas width
+canvas_width = window.winfo_width() // 2 + 50
+
 # creating a canvas
-canvas = tkinter.Canvas(main_frame, width=400, height=500, bg="white")
+canvas = tkinter.Canvas(main_frame, width=canvas_width, height=window.winfo_height(), bg="white")
 canvas.grid(row=0, column=0)
+
+# creating a buffer size variable, that will be used to determine the height of the hangman parts, the bigger the window the bigger the buffer size
+buffer_size = window.winfo_height() // 6
+center_size = window.winfo_width() // 8
 # drawing the hangman pole
-canvas.create_line(50, 50, 50, 400)
-canvas.create_line(50, 50, 200, 50)
-canvas.create_line(200, 50, 200, 100)
+canvas.create_line(center_size+50, buffer_size+50, center_size+50, buffer_size+400)
+canvas.create_line(center_size+50, buffer_size+50, center_size+200, buffer_size+50)
+canvas.create_line(center_size+200, buffer_size+50, center_size+200, buffer_size+100)
 
 # creating a sub frame for the buttons entry and label
 sub_frame = tkinter.Frame(main_frame, bg="gray", width=300, height=500)
