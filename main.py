@@ -1,6 +1,12 @@
 # necesary imports
 import tkinter
 import random
+import os 
+import sys
+if hasattr(sys, '_MEIPASS'):
+    base_path = sys._MEIPASS
+else:
+    base_path = os.path.abspath(".")
 
 # function to reset the game
 def reset():
@@ -91,7 +97,7 @@ def apply_settings(answer_resizable, answer_difficulty):
 # function to save the words to the file
 def save_words(words):
     # opening the file in write mode
-    with open("words.txt", "w") as file:
+    with open(os.path.join(base_path,"words.txt"), "w") as file:
         # writing the words to the file
         file.write(words)
     # changing the info label
@@ -105,7 +111,7 @@ def change_words():
     change_words_window.geometry("700x400")
     change_words_window.resizable(False, False)
     change_words_window.config(bg="gray")
-    change_words_window.iconbitmap("Hangman.ico")
+    change_words_window.iconbitmap(os.path.join(base_path, "Hangman.ico"))
     # creating a frame for the text editor and submit button
     frame = tkinter.Frame(change_words_window, bg="gray")
     frame.pack()
@@ -113,7 +119,7 @@ def change_words():
     text_editor = tkinter.Text(frame, font=("Arial", 10))
     text_editor.grid(row=0, column=0)
     # filling the text editor with the words from the file
-    with open("words.txt", "r") as file:
+    with open(os.path.join(base_path,"words.txt"), "r") as file:
         line = file.readline()
         while line:
             text_editor.insert("end", line)
@@ -131,7 +137,7 @@ def settings():
     settings_window.geometry("300x200")
     settings_window.resizable(False, False)
     settings_window.config(bg="gray")
-    settings_window.iconbitmap("Hangman.ico")
+    settings_window.iconbitmap(os.path.join(base_path,"Hangman.ico"))
     # creating a main label
     settings_label = tkinter.Label(settings_window, text="Settings", font=("Arial", 20), bg="gray")
     settings_label.pack()
@@ -301,10 +307,10 @@ def submit_guess(letter):
 
 # Main window settings
 window = tkinter.Tk()
-window.title("Hangman")
+window.title(os.path.join(base_path,"Hangman") )
 window.geometry("700x500")
 window.resizable(False, False)
-window.iconbitmap("hangman.ico")
+window.iconbitmap(os.path.join(base_path,"hangman.ico") )
 window.config(bg="gray")
 
 # variable for difficulty
@@ -321,7 +327,7 @@ elif difficulty == "hard":
 
 # creating a list of words from the words.txt file
 words = []
-with open("words.txt", "r") as file:
+with open(os.path.join(base_path,"words.txt") , "r") as file:
     line = file.readline()
     while line:
         words.append(line.strip())
