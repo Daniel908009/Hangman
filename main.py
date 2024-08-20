@@ -310,7 +310,7 @@ window = tkinter.Tk()
 window.title(os.path.join(base_path,"Hangman") )
 window.geometry("700x500")
 window.resizable(False, False)
-window.iconbitmap(os.path.join(base_path,"hangman.ico") )
+window.iconbitmap(os.path.join(base_path,"Hangman.ico") )
 window.config(bg="gray")
 
 # variable for difficulty
