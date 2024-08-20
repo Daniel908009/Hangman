@@ -15,14 +15,14 @@ Player wins by guessing all the letters <br>
 <h2>Using graphic UI</h2>
 <h3>Downloading EXE <h3>
 First make sure you have the latest release version selected <br>
- <br>
+(https://github.com/user-attachments/assets/3887ce91-8942-4fc6-be2c-93f318784fe3) <br>
 Then click on download exe file and wait until it downloads <br>
- <br>
+(https://github.com/user-attachments/assets/9f2952a2-cdf0-4758-94ba-23f8fe668cb1) <br>
 After its downloaded you can find it through file explorer or the browser it self. <br>
 Enjoy!<br>
 <h3>Downloading source code <h3>
 First click on the code button as shown in the picture bellow, then click the option Download ZIP <br>
- <br>
+(https://github.com/user-attachments/assets/ecebbb8d-68f6-4a90-a39a-0644e68f532d) <br>
 After its downloaded you can find it on your computer through file explorer. After you have found it right click it, it should display option called "Extract" <br>
 Click on it and wait a moment. A new directory should appear containing all the files neccesery for the game.<br>
 Enjoy the game! <br>
@@ -34,4 +34,5 @@ This code adress of the site can also be found if you click the code button insi
 If you dont have git than first enter the folowing command: sudo apt install git <br>
 Enjoy the game! <br>
 <h1>Screenshots of the game</h1>
- <br>
+(https://github.com/user-attachments/assets/3da5423b-e135-4eef-aef6-2d8368b01f1a) <br>
+(https://github.com/user-attachments/assets/5380e7ce-ad92-4478-9483-7ed768cabf00)
