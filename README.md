@@ -24,7 +24,7 @@ Enjoy!<br>
 First click on the code button as shown in the picture bellow, then click the option Download ZIP <br>
 (https://github.com/user-attachments/assets/ecebbb8d-68f6-4a90-a39a-0644e68f532d) <br>
 After its downloaded you can find it on your computer through file explorer. After you have found it right click it, it should display option called "Extract" <br>
-Click on it and wait a moment. A new directory should appear containing all the files neccesery for the game.<br>
+Click on it and wait a moment. A new directory should appear containing all the files neccesary for the game.<br>
 Enjoy the game! <br>
 <h2>Using command prompt</h2>
 <h3>Downloading source code <h3>
