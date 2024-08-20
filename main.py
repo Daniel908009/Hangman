@@ -312,6 +312,7 @@ window.geometry("700x500")
 window.resizable(False, False)
 window.iconbitmap(os.path.join(base_path,"Hangman.ico") )
 window.config(bg="gray")
+window.title("Hangman")
 
 # variable for difficulty
 # based on the difficulty the number of parts of the hangman will be determined
